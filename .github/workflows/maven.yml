@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4  # Обновлено до последней версии, поддерживающей Node.js 20
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -57,3 +57,4 @@ jobs:
           curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены:\\n${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
         else
           curl -X POST -H 'Content-type: application/json' --data '{"text":"Тесты не пройдены: файл с результатами тестов не найден."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        fi
