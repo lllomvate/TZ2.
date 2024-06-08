@@ -1,0 +1,1 @@
+min:16 max:988 sum:54804 mult:0
