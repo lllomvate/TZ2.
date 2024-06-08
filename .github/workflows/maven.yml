@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4  # Убедитесь, что это последняя версия, поддерживающая Node.js 20
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -42,4 +42,5 @@ jobs:
     - name: Notify Slack on failure
       if: failure()
       run: |
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены:\\n${{ steps.run-tests.outputs.test_results }}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
+        FAILED_TESTS=$(grep -A 10 "Tests run:" mvn-output.log)
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены:\\n${FAILED_TESTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
