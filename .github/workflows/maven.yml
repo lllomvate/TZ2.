@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +27,7 @@ jobs:
     - name: Generate test files
       run: mvn exec:java -Dexec.mainClass="org.example.GenerateTestFileMini"
 
-    - name: Run tests
+    - name: Run tests and record output
       run: mvn test | tee test-results.txt
 
     - name: Archive test results
@@ -41,10 +40,14 @@ jobs:
     - name: Notify Slack on success
       if: success()
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"Все ок!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"All tests passed successfully!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Notify Slack on failure
       if: failure()
       run: |
-        TEST_RESULTS=$(cat test-results.txt)
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены!\n\${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
+        if [ -f test-results.txt ]; then
+          TEST_RESULTS=$(cat test-results.txt)
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Tests failed:\\n${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
+        else
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Tests failed: No test result file found."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        fi
