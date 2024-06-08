@@ -33,7 +33,14 @@ jobs:
       run: mvn exec:java -Dexec.mainClass="org.example.GenerateTestFileMini"
 
     - name: Run tests
-      run: mvn test
+      run: mvn test | tee test-results.txt
+
+    - name: Archive test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: test-results.txt
 
     - name: Notify Slack on success
       if: success()
@@ -43,4 +50,5 @@ jobs:
     - name: Notify Slack on failure
       if: failure()
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"Тесты не пройдены!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        TEST_RESULTS=$(cat test-results.txt)
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены!\n\${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
