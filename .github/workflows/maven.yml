@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v3 
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -29,14 +29,13 @@ jobs:
 
     - name: Run tests and record output
       run: mvn test | tee test-results.txt
-      working-directory: ${{ github.workspace }}
 
     - name: Archive test results
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: test-results
-        path: ${{ github.workspace }}/test-results.txt
+        path: test-results.txt
 
     - name: Notify Slack on success
       if: success()
@@ -46,9 +45,9 @@ jobs:
     - name: Notify Slack on failure
       if: failure()
       run: |
-        if [ -f ${{ github.workspace }}/test-results.txt ]; then
-          TEST_RESULTS=$(cat ${{ github.workspace }}/test-results.txt)
+        if [ -f test-results.txt ]; then
+          TEST_RESULTS=$(cat test-results.txt)
           curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Tests failed:\\n${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
         else
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Tests failed: No test result file found."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application.json' --data '{"text":"Tests failed: No test result file found."}' ${{ secrets.SLACK_WEBHOOK_URL }}
         fi
