@@ -12,29 +12,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: '11'
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
 
-      - name: Generate test files
-        run: mvn exec:java -Dexec.mainClass="org.example.GenerateTestFileMini"
+    - name: Generate test files
+      run: mvn exec:java -Dexec.mainClass="org.example.GenerateTestFileMini"
 
-      - name: Run tests
-        run: mvn test
+    - name: Run tests
+      run: mvn test
 
-      - name: Notify Slack on success
-        if: success()
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Все ок!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+    - name: Notify Slack on success
+      if: success()
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Все ок!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Notify Slack on failure
-        if: failure()
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Тесты не пройдены!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+    - name: Notify Slack on failure
+      if: failure()
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Тесты не пройдены!"}' ${{ secrets.SLACK_WEBHOOK_URL }}
