@@ -29,6 +29,8 @@ jobs:
 
     - name: Run tests and record output
       run: |
+        pwd  # Вывод текущей директории для отладки
+        ls -alh  # Вывод списка файлов для отладки
         mvn test | tee test-results.txt
       shell: bash
 
@@ -55,4 +57,3 @@ jobs:
           curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Тесты не пройдены:\\n${TEST_RESULTS}\"}" ${{ secrets.SLACK_WEBHOOK_URL }}
         else
           curl -X POST -H 'Content-type: application/json' --data '{"text":"Тесты не пройдены: файл с результатами тестов не найден."}' ${{ secrets.SLACK_WEBHOOK_URL }}
-        fi
